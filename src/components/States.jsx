@@ -1,92 +1,69 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { putState } from "../store/reserch/reserchSilce";
 
 function States({ resId }) {
-  console.log(resId, "re_id");
+  // console.log("resId", resId);
 
-  const [sta, setSta] = useState("pending"); // الحالة المحلية
   const dispatch = useDispatch();
+  const research = useSelector((state) =>
+    state.research.data.find((res) => res._id === resId)
+  );
+  // const research = useSelector((state) => state.research.data);
+  // const researchId = research.find((res) => res._id === resId);
+  // console.log("researchId", researchId);
 
-  console.log(sta, "sta");
+  // console.log("res777777777", research);
 
-  // تغيير الحالة إلى "Approved"
-  const handleStatusApproved = async () => {
+  // Determine the current state (default to "pending" if not set)
+  const currentState = research?.state || "pending";
+
+  // Toggle between "Approved" and "Reject"
+  const handleStatusToggle = async (e) => {
     if (!resId) {
       console.error("Error: ID is not found");
       return;
     }
 
+    const newState = e.target.checked ? "Approved" : "Reject";
+
     try {
-      await dispatch(
-        putState({ resId: resId._id, state: "Approved" })
-      ).unwrap(); // تأكد من تنفيذ التحديث
-      setSta("Approved"); // تحديث الحالة المحلية فقط إذا نجح الطلب
-      console.log("تم تحديث الحالة إلى Approved");
+      await dispatch(putState({ resId, state: newState })).unwrap();
+      console.log(`تم تحديث الحالة إلى ${newState}`);
     } catch (error) {
       console.error("فشل في تحديث الحالة:", error);
     }
   };
 
-  // تغيير الحالة إلى "Reject"
-  const handleStatusReject = async () => {
-    if (!resId) {
-      console.error("Error: ID is not found");
-      return;
-    }
-
-    try {
-      await dispatch(putState({ resId, state: "Reject" })).unwrap();
-      setSta("Reject");
-      console.log("تم تحديث الحالة إلى Reject");
-    } catch (error) {
-      console.error("فشل في تحديث الحالة:", error);
-    }
-  };
   return (
-    <div className="w-20 flex justify-between">
-      {/* زر الموافقة */}
-      <button
-        className="group cursor-pointer outline-none hover:rotate-90 duration-300"
-        title="Approve"
-        onClick={handleStatusApproved}
-      >
-        <svg
-          className="stroke-green-500 fill-none group-hover:fill-green-800 group-active:stroke-green-200 group-active:fill-green-600 group-active:duration-0 duration-300"
-          viewBox="0 0 24 24"
-          height="30px"
-          width="30px"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeWidth="1.5"
-            d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z"
+    <div className="w-20 flex justify-center items-center">
+      <label className="flex items-center cursor-pointer">
+        <div className="relative">
+          {/* Checkbox Input */}
+          <input
+            type="checkbox"
+            className="sr-only"
+            checked={currentState === "Approved"}
+            onChange={handleStatusToggle}
           />
-          <path strokeWidth="1.5" d="M8 12H16" />
-          <path strokeWidth="1.5" d="M12 16V8" />
-        </svg>
-      </button>
-
-      {/* زر الرفض */}
-      <button
-        className="group cursor-pointer outline-none hover:rotate-90 duration-300"
-        title="Reject"
-        onClick={handleStatusReject}
-      >
-        <svg
-          className="stroke-red-500 fill-none group-hover:fill-red-800 group-active:stroke-red-200 group-active:fill-red-600 group-active:duration-0 duration-300"
-          viewBox="0 0 24 24"
-          height="30px"
-          width="30px"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeWidth="1.5"
-            d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z"
-          />
-          <path strokeWidth="1.5" d="M8 12H16" />
-        </svg>
-      </button>
+          {/* Toggle Line */}
+          <div
+            className={`block w-10 h-6 rounded-full transition-colors duration-300 ${
+              currentState === "Approved" ? "bg-green-500" : "bg-red-500"
+            }`}
+          ></div>
+          {/* Toggle Dot */}
+          <div
+            className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-300 ${
+              currentState === "Approved" ? "translate-x-4" : "translate-x-0"
+            }`}
+          ></div>
+        </div>
+        {/* Label */}
+        <span className="ml-2 text-sm">
+          {currentState === "Approved" ? "مقبول" : "مرفوض"}
+        </span>
+      </label>
     </div>
   );
 }

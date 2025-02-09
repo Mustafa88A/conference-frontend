@@ -56,7 +56,8 @@ function Home() {
       <div>
         <Category />
       </div>
-      <div className="flex justify-center items-center bg-pinery ">
+      <h1 className="font-bold text-lg md:text-4xl md:mr-48">المتحدثون </h1>
+      <div className="flex justify-center items-center   ">
         <SwiperCard data={data} />
       </div>
       <div className="flex justify-center items-center bg-pinery h-60 ">

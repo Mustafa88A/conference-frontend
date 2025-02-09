@@ -18,10 +18,10 @@ function Send() {
 
   const [participant, setParticipant] = useState([
     {
-      username: "",
-      coaction: "",
-      cityParticipant: "",
-      universityParticipant: "",
+      // username: "",
+      // coaction: "",
+      // cityParticipant: "",
+      // universityParticipant: "",
     },
   ]);
   const dispatch = useDispatch();
@@ -52,6 +52,17 @@ function Send() {
 
   const handleInputChange = (index, field, value) => {
     const updatedUser = [...participant];
+
+    // if (field === "coaction") {
+    //   const emailRegex = /^\S+@\S+\.\S+$/;
+    //   const phoneRegex = /^\d{11}$/;
+
+    //   if (!emailRegex.test(value) && !phoneRegex.test(value)) {
+    //     alert("يجب إدخال بريد إلكتروني صالح أو رقم هاتف مكون من 11 رقمًا.");
+    //     return;
+    //   }
+    // }
+
     updatedUser[index][field] = value;
     setParticipant(updatedUser);
   };

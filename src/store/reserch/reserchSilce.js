@@ -5,7 +5,7 @@ const apiUrl = process.env.REACT_APP_API_URL;
 
 const initialState = {
   loading: false,
-  data: null,
+  data: [],
   error: null,
   isLogged: false,
 };
@@ -47,22 +47,27 @@ export const createNewResearch = createAsyncThunk(
       } = post;
 
       // التأكد من أن participant هو مصفوفة واستخراج البيانات منها
-      if (Array.isArray(participant) && participant.length > 0) {
-        const [
-          {
-            username,
-            coaction,
-            city: cityParticipant,
-            university: universityParticipant,
-          },
-        ] = participant;
+      // if (Array.isArray(participant) && participant.length > 0) {
+      //   const [
+      //     {
+      //       username,
+      //       coaction,
+      //       cityParticipant: cityParticipant,
+      //       universityParticipant: universityParticipant,
+      //     },
+      //   ] = participant;
+      //   console.log("participant", participant);
 
-        // إضافة بيانات المشاركين
-        formData.append("participantUsername", username);
-        formData.append("participantCoaction", coaction);
-        formData.append("participantCity", cityParticipant);
-        formData.append("participantUniversity", universityParticipant);
-      }
+      //   // إضافة بيانات المشاركين
+      //   {
+      //     formData.append("participantUsername", username);
+      //     formData.append("participantCoaction", coaction);
+      //     formData.append("participantCity", cityParticipant);
+      //     formData.append("participantUniversity", universityParticipant);
+      //   }
+      //   console.log("fform", formData.get(participant));
+      // }
+      formData.append("participant", JSON.stringify(participant));
 
       // إضافة بقية البيانات
       formData.append("title", title);
@@ -75,8 +80,14 @@ export const createNewResearch = createAsyncThunk(
       formData.append("summary", summary);
       formData.append("category", category);
       formData.append("file", file);
-      const res = await axios.post("http://localhost:7800/research", formData);
+      const res = await axios.post("http://localhost:7800/research", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data", // ✅ مهم جدًا عند إرسال `FormData`
+        },
+      });
       const data = res.data;
+      console.log("formData", formData);
+
       return data;
     } catch (error) {
       console.log(error);
@@ -147,9 +158,22 @@ const researchSlice = createSlice({
         state.error = null;
       })
       .addCase(putState.fulfilled, (state, action) => {
-        state.loading = true;
-        state.data = action.payload;
+        state.loading = false;
+
+        const updatedResearch = action.payload;
+        console.log("updatedResearch", action.payload);
+
+        if (state.data && Array.isArray(state.data)) {
+          state.data = state.data.map((res) =>
+            res._id === updatedResearch._id
+              ? { ...res, state: updatedResearch.state }
+              : res
+          );
+          // console.log(updatedResearch, "updatedResearch");
+        }
+        console.log("state", state);
       })
+
       .addCase(putState.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;

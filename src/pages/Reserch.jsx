@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 function Reserch() {
   const navigate = useNavigate();
   const reserchs = useSelector((state) => state?.research?.data);
-  console.log("kalfaaiojrioghiORW", reserchs);
 
   return (
     <div className="flex justify-center flex-col gap-5 items-center">
@@ -47,9 +46,11 @@ function Reserch() {
           </h2>
           <h2 className="w-20 text-center bg-pinery md:h-9">الحالة</h2>
         </div>
-        <div className="flex  min-w-[900px] text-lg md:w-[95%] md:text-2xl md:h-10 md:items-center">
+        <div className="flex flex-col min-w-[900px] text-lg md:w-[95%] md:text-2xl md:h-10 md:items-center">
           {reserchs?.map((res) => (
-            <>
+            <div key={res._id} className="flex w-full">
+              {" "}
+              {/* Add key and flex container */}
               <h2 className="w-52 bg-pinery text-center md:w-96 md:h-9">
                 {res.title}
               </h2>
@@ -57,7 +58,7 @@ function Reserch() {
                 {res.nameOfResearch}
               </h2>
               <h2 className="w-52 text-center bg-pinery md:w-96 md:h-9">
-                {res.email}{" "}
+                {res.email}
               </h2>
               <h2 className="w-28 text-center bg-pinery md:w-96 md:h-9">
                 {res.phone}
@@ -65,8 +66,8 @@ function Reserch() {
               <h2 className="w-28 text-center bg-pinery md:w-80 md:h-9">
                 {res.category.name}
               </h2>
-              <States resId={res} />
-            </>
+              <States resId={res._id} />
+            </div>
           ))}
         </div>
       </div>
